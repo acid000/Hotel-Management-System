@@ -3,10 +3,13 @@ using namespace std;
 // global variable 
 // no of rooms 
 int rooms=10;
+
 int t=1;
 int tt=1;
 int logged=0;
-
+ 
+// cost of each room is rs 1000
+int cost_of_rooms=1000;
 // we will store a unique id against each name 
 unordered_map<int,string>uid;
 
@@ -15,17 +18,19 @@ int random_number=0;
 vector<pair<string,int>>items;
 
 // rooms and their owner list
-unordered_map<string,int>m;
+unordered_map<int,int>m;
 
 // rooms that are already visited/booked
 vector<bool>visited(10,0);
 
 // map to store ownwer and their booked items
-unordered_map<string,vector<pair<string,int>>>ilist;
+unordered_map<int,vector<pair<string,int>>>ilist;
+
+
 
 void login(int id){
     if(uid.count(id)){
-         cout<<"successfully logged in"<<"\n\n";
+        cout<<"successfully logged in"<<"\n\n";
         logged=1;
         t=0;
     }
@@ -162,12 +167,12 @@ void roomBooking(){
         cin>>id;
         if(uid.count(id)){
             cout<<"Hi "<<uid[id]<<"\n\n";
-            if(m.count(uid[id])){
-                int allready_booked_room=m[uid[id]];
-                m.insert({uid[id],nrm+allready_booked_room});
+            if(m.count(id)){
+                int allready_booked_room=m[id];
+                m.insert({id,nrm+allready_booked_room});
             }
             else{
-            m.insert({uid[id],nrm});
+            m.insert({id,nrm});
             }
             for(int i=0;i<s.size();i++){
                 visited[s[i]-'0']=true;
@@ -188,9 +193,10 @@ void bookingdetails(){
     if(uid.count(id)){
     
     for(auto i:m){
-        if(i.first==uid[id]){
+        if(i.first==id){
             ch++;
-            cout<<"your name is "<<i.first<<" "<<"and you have "<<i.second<<" "<<"rooms booked"<<"\n\n";
+            cout<<"your name is "<<uid[i.first]<<" "<<"and you have "<<i.second<<" "<<"rooms booked"<<"\n\n";
+            cout<<"Your Total Price is ->"<<i.second*cost_of_rooms<<"\n\n";
             break;
         }
     }
@@ -203,7 +209,7 @@ void orderfood(){
     cout<<"plz enter your unique id"<<"\n\n";
     int id;
     cin>>id;
-    if(m.count(uid[id])){
+    if(m.count(id)){
         cout<<" your order will be delivered to your room"<<"\n\n";
         cout<<" plz order sir"<<"\n\n";
         cout<<"right now we have following items in menu"<<"\n\n";
@@ -218,7 +224,7 @@ void orderfood(){
         int quantity;
         cin>>quantity;
         cout<<"Your order has been placed"<<"\n\n";
-        ilist[uid[id]].push_back({iname,quantity});
+        ilist[id].push_back({iname,quantity});
         
 
     }
@@ -235,7 +241,7 @@ void orderfood(){
         cout<<"enter quantity"<<"\n\n";
         int quantity;
         cin>>quantity;
-        ilist[uid[id]].push_back({iname,quantity});
+        ilist[id].push_back({iname,quantity});
         cout<<"your order has been placed"<<"\n\n";
     }
 }
@@ -247,7 +253,7 @@ void orderdetails(){
     cout<<"wait a minute checking for order details..."<<"\n\n";
     int ch=0;
     for(auto i:ilist){
-        if(i.first==uid[id]){
+        if(i.first==id){
             ch++;
             cout<<"hi sir there are following orders on your name->"<<"\n\n";
             for(auto j:i.second){
@@ -271,6 +277,48 @@ void orderdetails(){
         cout<<"sorry sir there is no order on your name"<<"\n\n\n";
     }
 }
+void checkout(){
+    cout<<"please enter unique id"<<"\n\n";
+    int id;
+    cin>>id;
+    if(uid.count(id)){
+        cout<<"Hello "<<uid[id]<<"\n\n";
+        cout<<"we are checking for your room booking details\n\n";
+        cout<<"You have "<<m[id]<<" rooms";
+        cout<<"Your total price for room booking is->"<<m[id]*cost_of_rooms<<"\n\n";
+        cout<<"we are checking for your food order details\n\n";
+        if(ilist.count(id)){
+            cout<<"You have order following items \n\n";
+            for(auto i:ilist[id]){
+                cout<<i.first<<"->"<<i.second<<"\n\n";
+            }
+            
+            int sum=0;
+            for(auto item:items){
+                for(auto i:ilist[id]){
+                    if(item.first==i.first)sum=sum+item.second*i.second;
+                }
+            }
+            cout<<"Your total price for food is-> "<<sum<<"\n\n";
+            cout<<"your grand totel is "<<sum+m[id]*cost_of_rooms<<"\n\n";
+        }
+        else{
+            cout<<"You haven't order any thing yet\n\n";
+        }
+    }
+    int x=m[id];
+    m.erase(id);
+    ilist.erase(id);
+    
+    for(auto i:visited){
+        if(x!=0){
+            if(i){
+                i=false;
+                x=x-1;
+            }
+        }
+    }
+}
 int main(){
     // manually adding data
 
@@ -286,7 +334,8 @@ int main(){
     cout<<"\t\t\t\t\t\t enter 3 for room details "<<"\n\n";
     cout<<"\t\t\t\t\t\t enter 4 for orderfood "<<"\n\n";
     cout<<"\t\t\t\t\t\t enter 5 for order details "<<"\n\n";
-    cout<<"\t\t\t\t\t\t enter 6 for logout"<<"\n\n";
+    cout<<"\t\t\t\t\t\t enter 6 for Checkout"<<"\n\n";
+    cout<<"\t\t\t\t\t\t enter 7 for logout"<<"\n\n";
     int c;
     cin>>c;
     int x=1;
@@ -312,8 +361,14 @@ int main(){
              orderdetails();
              x=0;
         }
-        else {
-            cout<<"make sure You have Checked Out"<<"\n\n";
+        else if(c==6) {
+            checkout();
+            logged=0;
+            t=1;
+            tt=1;
+            break;
+        }
+        else{
             logged=0;
             t=1;
             tt=1;
