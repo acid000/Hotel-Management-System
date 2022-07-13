@@ -284,7 +284,7 @@ void checkout(){
     if(uid.count(id)){
         cout<<"Hello "<<uid[id]<<"\n\n";
         cout<<"we are checking for your room booking details\n\n";
-        cout<<"You have "<<m[id]<<" rooms";
+        cout<<"You have "<<m[id]<<" rooms\n\n";
         cout<<"Your total price for room booking is->"<<m[id]*cost_of_rooms<<"\n\n";
         cout<<"we are checking for your food order details\n\n";
         if(ilist.count(id)){
@@ -299,7 +299,7 @@ void checkout(){
                     if(item.first==i.first)sum=sum+item.second*i.second;
                 }
             }
-            cout<<"Your total price for food is-> "<<sum<<"\n\n";
+            cout<<"Your total price for food is-> "<<sum <<"\n\n";
             cout<<"your grand totel is "<<sum+m[id]*cost_of_rooms<<"\n\n";
         }
         else{
