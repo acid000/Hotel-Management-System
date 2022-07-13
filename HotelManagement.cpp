@@ -42,7 +42,7 @@ void signup(string name){
      }
      a=a*10+random_number;
      random_number++;
-     uid.insert({a,"name"});
+     uid.insert({a,name});
       cout<<"signup completed"<<"\n\n";
       cout<<"Your unique id is "<<a<<"\n";
       login(a);
@@ -135,10 +135,10 @@ void administrator(){
 }
 
 void roomBooking(){
-    cout<<"plz enter the number of rooms you want to book"<<"\n";
+    cout<<"plz enter the number of rooms you want to book"<<"\n\n";
     int nrm;
     cin>>nrm;
-    cout<<"checking for available rooms"<<"\n";
+    cout<<"checking for available rooms"<<"\n\n";
     int cnt=0;
     string s="";
     for(int i=0;i<10;i++){
@@ -146,52 +146,69 @@ void roomBooking(){
             cnt++;
             s=s+to_string(i);
             if(cnt==nrm){
-                cout<<"rooms are available "<<"\n";
-                s="";
+                cout<<"rooms are available "<<"\n\n";
+                //s="";
                 break;
             }
         }
     }
     if(cnt!=nrm){
-        cout<<"sorry rooms are not available"<<"\n";
+        cout<<"sorry rooms are not available"<<"\n\n";
+        s="";
     }
     else{
-        cout<<"plz enter your name"<<"\n";
-        string name;
-        cin>>name;
-        m.insert({name,nrm});
-        for(int i=0;i<s.size();i++){
-            visited[s[i]-'0']=true;
+        cout<<"plz enter your unique id"<<"\n\n";
+        int id;
+        cin>>id;
+        if(uid.count(id)){
+            cout<<"Hi "<<uid[id]<<"\n\n";
+            if(m.count(uid[id])){
+                int allready_booked_room=m[uid[id]];
+                m.insert({uid[id],nrm+allready_booked_room});
+            }
+            else{
+            m.insert({uid[id],nrm});
+            }
+            for(int i=0;i<s.size();i++){
+                visited[s[i]-'0']=true;
+            }
+            cout<<"congrats rooms has been allocated"<<"\n\n";
         }
-       cout<<"congrats rooms has been allocated"<<"\n";
+        else{
+            cout<<"You have enter a wrong id...try again"<<"\n\n";
+        }
+     
     }
 }
 void bookingdetails(){
-    cout<<"plz enter your name"<<"\n";
-    string name;
-    cin>>name;
+    cout<<"plz enter your unique id"<<"\n\n";
+    int id;
+    cin>>id;
     int ch=0;
+    if(uid.count(id)){
+    
     for(auto i:m){
-        if(i.first==name){
+        if(i.first==uid[id]){
             ch++;
-            cout<<"your name is "<<i.first<<" "<<"and you have "<<i.second<<" "<<"rooms booked"<<"\n";
+            cout<<"your name is "<<i.first<<" "<<"and you have "<<i.second<<" "<<"rooms booked"<<"\n\n";
             break;
         }
     }
+    }
     if(ch==0){
-        cout<<"sorry wrong credential"<<"\n";
+        cout<<"sorry wrong credential"<<"\n\n";
     }
 }
 void orderfood(){
-    cout<<"plz enter your name"<<"\n";
-    string name;
-    cin>>name;
-    if(m.count(name)){
+    cout<<"plz enter your unique id"<<"\n\n";
+    int id;
+    cin>>id;
+    if(m.count(uid[id])){
         cout<<" your order will be delivered to your room"<<"\n\n";
         cout<<" plz order sir"<<"\n\n";
         cout<<"right now we have following items in menu"<<"\n\n";
         for(auto i:items){
-            cout<<i.first<<"\n";
+            cout<<i.first<<"\n\n";
         }
         cout<<"\n\n\n";
         string iname;
@@ -201,7 +218,7 @@ void orderfood(){
         int quantity;
         cin>>quantity;
         cout<<"Your order has been placed"<<"\n\n";
-        ilist[name].push_back({iname,quantity});
+        ilist[uid[id]].push_back({iname,quantity});
         
 
     }
@@ -218,19 +235,19 @@ void orderfood(){
         cout<<"enter quantity"<<"\n\n";
         int quantity;
         cin>>quantity;
-        ilist[name].push_back({iname,quantity});
+        ilist[uid[id]].push_back({iname,quantity});
         cout<<"your order has been placed"<<"\n\n";
     }
 }
 void orderdetails(){
-    cout<<"plz enter your name sir"<<"\n\n";
-    string name;
-    cin>>name;
+     cout<<"plz enter your unique id"<<"\n\n";
+    int id;
+    cin>>id;
     cout<<"\n\n";
     cout<<"wait a minute checking for order details..."<<"\n\n";
     int ch=0;
     for(auto i:ilist){
-        if(i.first==name){
+        if(i.first==uid[id]){
             ch++;
             cout<<"hi sir there are following orders on your name->"<<"\n\n";
             for(auto j:i.second){
